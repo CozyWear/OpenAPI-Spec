@@ -68,17 +68,24 @@ paths:
                   minimum: 0
                   maximum: 2
 
-                  email:
-                    type: string
-                    examples: ["email@example.org"]
-                    minimum: 16
-                    maximum: 64
+                name:
+                  type: string
+                  examples: [abcd]
+                  minimum: 1
+                  maximum: 32
 
-                  password:
-                    type: string
-                    examples: ["helloworld"]
-                    minimum: 8
-                    maximum: 16
+                email:
+                  type: string
+                  examples: ["email@example.org"]
+                  minimum: 16
+                  maximum: 64
+
+                password:
+                  type: string
+                  examples: ["helloworld"]
+                  minimum: 8
+                  maximum: 16
+
       responses:
         "200":
           description: The new account has been registered
@@ -136,8 +143,8 @@ paths:
               type: object
               properties:
                 materialId:
-                  type: string
-                  examples: [383cbad4f36c4c7bb93e4f7cd9713550]
+                  type: integer
+                  examples: [0]
 
       responses:
         "200":
@@ -148,3 +155,36 @@ paths:
 
         "500":
           description: An error occurred while removing the material. Try again.
+
+  /merchant/material/update:
+    post:
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                materialId:
+                  type: integer
+                  examples: [0]
+
+                attributeType:
+                  type: string
+                  examples: [costPerUnit]
+
+                attributeValue:
+                  oneOf:
+                    - type: integer
+                    - type: string
+                  examples: [10, 10]
+
+      responses:
+        "200":
+          description: The material has been updated
+
+        "404":
+          description: The material does not exist
+
+        "500":
+          description: An error occurred while updating the material. Try again.
