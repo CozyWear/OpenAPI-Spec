@@ -43,12 +43,7 @@ paths:
                   maximum: 16
       responses:
         "200":
-          description: The account details provided is valid and the login request has been authorized
-          content:
-            application/json:
-              schema:
-                type: string
-                examples: ["383cbad4f36c4c7bb93e4f7cd9713550"]
+          description: The account details provided is valid and the login request has been authorized. A cookie is set containing the session details.
 
         "401":
           description: The account details provided is not valid and the login request has been rejected
