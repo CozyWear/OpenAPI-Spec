@@ -107,11 +107,6 @@ paths:
                   type: string
                   examples: ["silk"]
 
-                dimensions:
-                  type: array
-                  examples: [[10, 20]]
-                  description: length x breadth
-
                 costPerUnit:
                   type: number
                   examples: [40]
@@ -125,6 +120,12 @@ paths:
         "200":
           description: The new material has been added
 
+        "401":
+          description: Unauthorised. More description is found in the response body
+
+        "404":
+          description: Not found. More description is found in the response body
+        
         "500":
           description: An error occured while adding a material. Try again.
 
@@ -145,14 +146,17 @@ paths:
         "200":
           description: The material has been removed
 
+        "401":
+          description: Unauthorised. More description is found in the response body
+
         "404":
-          description: The requested material does not exists
+          description: Not found. More description is found in the response body
 
         "500":
           description: An error occurred while removing the material. Try again.
-
-  /merchant/material/update:
-    post:
+  
+  /merchant/material/materials:
+    get:
       requestBody:
         required: true
         content:
@@ -160,26 +164,25 @@ paths:
             schema:
               type: object
               properties:
-                materialId:
-                  type: integer
-                  examples: [0]
-
-                attributeType:
+                lastSeenId:
                   type: string
-                  examples: [costPerUnit]
-
-                attributeValue:
-                  oneOf:
-                    - type: integer
-                    - type: string
-                  examples: [10, 10]
-
+                  description: It is the id of the material last recieved from this endpoint. If the request is performed for the first time, leave it empty
+                  examples: 
+                    - bb3f3ffd-0152-415d-ad53-631e9a0fbea7
+                pageSize:
+                  type: integer
+                  description: Number of items to be returned by the endpoint, the maximum amount per request is 50.
+                  examples: 
+                    - 20
       responses:
         "200":
-          description: The material has been updated
+          description: The request is processed successfully
+
+        "401":
+          description: Unauthorised. More description is found in the response body
 
         "404":
-          description: The material does not exist
+          description: Not found. More description is found in the response body
 
         "500":
-          description: An error occurred while updating the material. Try again.
+          description: An error occurred while removing the material. Try again.
