@@ -1,5 +1,0 @@
-{
-    "yaml.schemas": {
-        "https://raw.githubusercontent.com/OAI/OpenAPI-Specification/main/schemas/v3.1/schema.json": "file:///home/voiceroy/Documents/Git%20Repositories/CozyWear/apispec/cozywear.yml"
-    }
-}
