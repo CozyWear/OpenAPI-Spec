@@ -10,11 +10,10 @@ paths:
   /health-check:
     get:
       responses:
-        "200":
+        '200':
           description: All the services are working properly
-        "503":
+        '503':
           description: Some/All the services are not working properly
-
   /accounts/login:
     post:
       requestBody:
@@ -26,28 +25,31 @@ paths:
               properties:
                 userType:
                   type: integer
-                  examples: [0]
+                  examples:
+                    - 0
                   minimum: 0
                   maximum: 2
-
                 email:
                   type: string
-                  examples: ["email@example.org"]
+                  examples:
+                    - email@example.org
                   minimum: 16
                   maximum: 64
-
                 password:
                   type: string
-                  examples: ["helloworld"]
+                  examples:
+                    - helloworld
                   minimum: 8
                   maximum: 16
       responses:
-        "200":
-          description: The account details provided is valid and the login request has been authorized. A cookie is set containing the session details.
-
-        "401":
-          description: The account details provided is not valid and the login request has been rejected
-
+        '200':
+          description: >-
+            The account details provided is valid and the login request has been
+            authorized. A cookie is set containing the session details.
+        '401':
+          description: >-
+            The account details provided is not valid and the login request has
+            been rejected
   /accounts/register:
     post:
       requestBody:
@@ -59,40 +61,40 @@ paths:
               properties:
                 userType:
                   type: integer
-                  examples: [0]
+                  examples:
+                    - 0
                   minimum: 0
                   maximum: 2
-
                 name:
                   type: string
-                  examples: [abcd]
+                  examples:
+                    - abcd
                   minimum: 1
                   maximum: 32
-
                 email:
                   type: string
-                  examples: ["email@example.org"]
+                  examples:
+                    - email@example.org
                   minimum: 16
                   maximum: 64
-
                 password:
                   type: string
-                  examples: ["helloworld"]
+                  examples:
+                    - helloworld
                   minimum: 8
                   maximum: 16
-
       responses:
-        "200":
+        '200':
           description: The new account has been registered
-
-        "400":
-          description: The account details used for registration have already been used for an another account
-
-        "500":
-          description: An error occured while registering a new user account. Try again.
-
+        '400':
+          description: >-
+            The account details used for registration have already been used for
+            an another account
+        '500':
+          description: An error occured while registering a new user account. Try again
   /merchant/material/add:
     post:
+      summary: Add a new material (User must be logged in before frontend peforms this request).
       requestBody:
         required: true
         content:
@@ -102,35 +104,35 @@ paths:
               properties:
                 imageUrl:
                   type: string
-
                 materialName:
                   type: string
-                  examples: ["silk"]
-
-                costPerUnit:
+                  examples:
+                    - silk
+                materialType:
+                  type: string
+                  examples:
+                    - 338f9c76-db27-420c-97d0-4a57cc35b321
+                cost_per_unit:
                   type: number
-                  examples: [40]
+                  examples:
+                    - 40
                   description: In Indian Rupees (INR)
-
                 stockQuantity:
                   type: integer
-                  examples: [10]
-
+                  examples:
+                    - 10
       responses:
-        "200":
+        '200':
           description: The new material has been added
-
-        "401":
+        '401':
           description: Unauthorised. More description is found in the response body
-
-        "404":
+        '404':
           description: Not found. More description is found in the response body
-
-        "500":
-          description: An error occured while adding a material. Try again.
-
+        '500':
+          description: An error occured while adding a material. Try again
   /merchant/material/remove:
     post:
+      summary: Remove a material (User must be logged in before frontend peforms this request).
       requestBody:
         required: true
         content:
@@ -139,24 +141,21 @@ paths:
               type: object
               properties:
                 materialId:
-                  type: integer
-                  examples: [0]
-
+                  type: string
+                  examples:
+                    - 338f9c76-db27-420c-97d0-4a57cc35b321
       responses:
-        "200":
+        '200':
           description: The material has been removed
-
-        "401":
+        '401':
           description: Unauthorised. More description is found in the response body
-
-        "404":
+        '404':
           description: Not found. More description is found in the response body
-
-        "500":
-          description: An error occurred while removing the material. Try again.
-
-  /merchant/material/materials:
+        '500':
+          description: An error occurred while removing the material. Try again
+  /merchant/materials:
     get:
+      summary: Get all the materials of the tailor that is logged in (User must be logged in before frontend peforms this request).
       requestBody:
         required: true
         content:
@@ -164,25 +163,192 @@ paths:
             schema:
               type: object
               properties:
-                lastSeenId:
-                  type: string
-                  description: It is the id of the material last recieved from this endpoint. If the request is performed for the first time, leave it empty
+                lastSeenSortId:
+                  type: integer
+                  description: >-
+                    It is the sort_id of the material last recieved from this
+                    endpoint. If the request is performed for the first time,
+                    leave it empty
                   examples:
-                    - bb3f3ffd-0152-415d-ad53-631e9a0fbea7
+                    - 2
                 pageSize:
                   type: integer
-                  description: Number of items to be returned by the endpoint, the maximum amount per request is 50.
+                  description: >-
+                    Number of items to be returned by the endpoint, the maximum
+                    amount per request is 50.
                   examples:
                     - 20
       responses:
-        "200":
+        '200':
           description: The request is processed successfully
-
-        "401":
+        '401':
           description: Unauthorised. More description is found in the response body
-
-        "404":
+        '404':
           description: Not found. More description is found in the response body
-
-        "500":
-          description: An error occurred while removing the material. Try again.
+        '500':
+          description: An error occurred while removing the material. Try again
+  '/merchant/material/{material_id}':
+    get:
+      summary: Get a cloth material by its ID
+      parameters:
+        - in: path
+          name: material_id
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: The request is processed successfully
+        '404':
+          description: Not found. More description is found in the response body
+        '500':
+          description: An error occurred while removing the material. Try again
+  /merchant/material-types:
+    get:
+      summary: Get a list of material types with ID and name
+      responses:
+        '200':
+          description: The request is processed successfully
+        '500':
+          description: An error occured while retrieving the material types. Try again
+  /tailor/style/add:
+    post:
+      summary: Add a new style into the logged in tailor (User must be logged in before frontend performs this request).
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                imageUrl:
+                  type: string
+                styleName:
+                  type: string
+                  examples:
+                    - silk
+                description:
+                  type: string
+                style_type:
+                  type: string
+                  examples:
+                    - bb3f3ffd-0152-415d-ad53-631e9a0fbea7
+                material_type_required:
+                  type: string
+                  examples:
+                    - bb3f3ffd-0152-415d-ad53-631e9a0fbea7
+                fit_type:
+                  type: string
+                  examples:
+                    - bb3f3ffd-0152-415d-ad53-631e9a0fbea7
+                cost_per_unit:
+                  type: number
+                  examples:
+                    - 40
+                  description: In Indian Rupees (INR)
+      responses:
+        '200':
+          description: The new style has been added
+        '401':
+          description: Unauthorised. More description is found in the response body
+        '404':
+          description: Not found. More description is found in the response body
+        '500':
+          description: An error occured while adding a style. Try again
+  /tailor/style/remove:
+    post:
+      summary: Remove a style by its id (User must be logged in before frontend peforms this request). 
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                styleId:
+                  type: string
+                  examples:
+                    - bb3f3ffd-0152-415d-ad53-631e9a0fbea7
+      responses:
+        '200':
+          description: The style has been removed
+        '401':
+          description: Unauthorised. More description is found in the response body
+        '404':
+          description: Not found. More description is found in the response body
+        '500':
+          description: An error occurred while removing the style. Try again
+  /tailor/styles:
+    get:
+      summary: Get all the styles of the tailor that is logged in (User must be logged in before frontend peforms this request).
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                lastSeenSortId:
+                  type: integer
+                  description: >-
+                    It is the sort_id of the style last recieved from this
+                    endpoint. If the request is performed for the first time,
+                    leave it empty
+                  examples:
+                    - 2
+                pageSize:
+                  type: integer
+                  description: >-
+                    Number of items to be returned by the endpoint, the maximum
+                    amount per request is 50.
+                  examples:
+                    - 20
+      responses:
+        '200':
+          description: The request is processed successfully
+        '401':
+          description: Unauthorised. More description is found in the response body
+        '404':
+          description: Not found. More description is found in the response body
+        '500':
+          description: An error occurred while removing the style. Try again
+  '/tailor/style/{style_id}':
+    get:
+      summary: Get a cloth style by its ID
+      parameters:
+        - in: path
+          name: style_id
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: The request is processed successfully
+        '404':
+          description: Not found. More description is found in the response body
+        '500':
+          description: An error occurred while removing the style. Try again
+  /tailor/style-types:
+    get:
+      summary: Get a list of style types with ID and name
+      responses:
+        '200':
+          description: The request is processed successfully
+        '500':
+          description: An error occured while retrieving the style types. Try again
+  /tailor/fit-types:
+    get:
+      summary: Get a list of fit types with ID and name
+      responses:
+        '200':
+          description: The request is processed successfully
+        '500':
+          description: An error occured while retrieving the fit types. Try again
+  /data/search-data:
+    get:
+      summary: Get search data for search query processing
+      responses:
+        '200':
+          description: Successfully generated and sent the search data
+        '500':
+          description: An error occured while generating the search data. Try again
