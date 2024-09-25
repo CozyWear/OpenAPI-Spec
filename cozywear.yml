@@ -1,354 +1,884 @@
-openapi: 3.1.0
-info:
-  version: 1.0.0
-  title: CozyWear API
-  description: CozyWear API
-servers:
-  - url: /
-    description: Production Server
-paths:
-  /health-check:
-    get:
-      responses:
-        '200':
-          description: All the services are working properly
-        '503':
-          description: Some/All the services are not working properly
-  /accounts/login:
-    post:
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                userType:
-                  type: integer
-                  examples:
-                    - 0
-                  minimum: 0
-                  maximum: 2
-                email:
-                  type: string
-                  examples:
-                    - email@example.org
-                  minimum: 16
-                  maximum: 64
-                password:
-                  type: string
-                  examples:
-                    - helloworld
-                  minimum: 8
-                  maximum: 16
-      responses:
-        '200':
-          description: >-
-            The account details provided is valid and the login request has been
-            authorized. A cookie is set containing the session details.
-        '401':
-          description: >-
-            The account details provided is not valid and the login request has
-            been rejected
-  /accounts/register:
-    post:
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                userType:
-                  type: integer
-                  examples:
-                    - 0
-                  minimum: 0
-                  maximum: 2
-                name:
-                  type: string
-                  examples:
-                    - abcd
-                  minimum: 1
-                  maximum: 32
-                email:
-                  type: string
-                  examples:
-                    - email@example.org
-                  minimum: 16
-                  maximum: 64
-                password:
-                  type: string
-                  examples:
-                    - helloworld
-                  minimum: 8
-                  maximum: 16
-      responses:
-        '200':
-          description: The new account has been registered
-        '400':
-          description: >-
-            The account details used for registration have already been used for
-            an another account
-        '500':
-          description: An error occured while registering a new user account. Try again
-  /merchant/material/add:
-    post:
-      summary: Add a new material (User must be logged in before frontend peforms this request).
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                imageUrl:
-                  type: string
-                materialName:
-                  type: string
-                  examples:
-                    - silk
-                materialType:
-                  type: string
-                  examples:
-                    - 338f9c76-db27-420c-97d0-4a57cc35b321
-                cost_per_unit:
-                  type: number
-                  examples:
-                    - 40
-                  description: In Indian Rupees (INR)
-                stockQuantity:
-                  type: integer
-                  examples:
-                    - 10
-      responses:
-        '200':
-          description: The new material has been added
-        '401':
-          description: Unauthorised. More description is found in the response body
-        '404':
-          description: Not found. More description is found in the response body
-        '500':
-          description: An error occured while adding a material. Try again
-  /merchant/material/remove:
-    post:
-      summary: Remove a material (User must be logged in before frontend peforms this request).
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                materialId:
-                  type: string
-                  examples:
-                    - 338f9c76-db27-420c-97d0-4a57cc35b321
-      responses:
-        '200':
-          description: The material has been removed
-        '401':
-          description: Unauthorised. More description is found in the response body
-        '404':
-          description: Not found. More description is found in the response body
-        '500':
-          description: An error occurred while removing the material. Try again
-  /merchant/materials:
-    get:
-      summary: Get all the materials of the tailor that is logged in (User must be logged in before frontend peforms this request).
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                lastSeenSortId:
-                  type: integer
-                  description: >-
-                    It is the sort_id of the material last recieved from this
-                    endpoint. If the request is performed for the first time,
-                    leave it empty
-                  examples:
-                    - 2
-                pageSize:
-                  type: integer
-                  description: >-
-                    Number of items to be returned by the endpoint, the maximum
-                    amount per request is 50.
-                  examples:
-                    - 20
-      responses:
-        '200':
-          description: The request is processed successfully
-        '401':
-          description: Unauthorised. More description is found in the response body
-        '404':
-          description: Not found. More description is found in the response body
-        '500':
-          description: An error occurred while removing the material. Try again
-  '/merchant/material/{material_id}':
-    get:
-      summary: Get a cloth material by its ID
-      parameters:
-        - in: path
-          name: material_id
-          schema:
-            type: string
-          required: true
-      responses:
-        '200':
-          description: The request is processed successfully
-        '404':
-          description: Not found. More description is found in the response body
-        '500':
-          description: An error occurred while removing the material. Try again
-  /merchant/material-types:
-    get:
-      summary: Get a list of material types with ID and name
-      responses:
-        '200':
-          description: The request is processed successfully
-        '500':
-          description: An error occured while retrieving the material types. Try again
-  /tailor/style/add:
-    post:
-      summary: Add a new style into the logged in tailor (User must be logged in before frontend performs this request).
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                imageUrl:
-                  type: string
-                styleName:
-                  type: string
-                  examples:
-                    - silk
-                description:
-                  type: string
-                style_type:
-                  type: string
-                  examples:
-                    - bb3f3ffd-0152-415d-ad53-631e9a0fbea7
-                material_type_required:
-                  type: string
-                  examples:
-                    - bb3f3ffd-0152-415d-ad53-631e9a0fbea7
-                fit_type:
-                  type: string
-                  examples:
-                    - bb3f3ffd-0152-415d-ad53-631e9a0fbea7
-                cost_per_unit:
-                  type: number
-                  examples:
-                    - 40
-                  description: In Indian Rupees (INR)
-      responses:
-        '200':
-          description: The new style has been added
-        '401':
-          description: Unauthorised. More description is found in the response body
-        '404':
-          description: Not found. More description is found in the response body
-        '500':
-          description: An error occured while adding a style. Try again
-  /tailor/style/remove:
-    post:
-      summary: Remove a style by its id (User must be logged in before frontend peforms this request). 
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                styleId:
-                  type: string
-                  examples:
-                    - bb3f3ffd-0152-415d-ad53-631e9a0fbea7
-      responses:
-        '200':
-          description: The style has been removed
-        '401':
-          description: Unauthorised. More description is found in the response body
-        '404':
-          description: Not found. More description is found in the response body
-        '500':
-          description: An error occurred while removing the style. Try again
-  /tailor/styles:
-    get:
-      summary: Get all the styles of the tailor that is logged in (User must be logged in before frontend peforms this request).
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                lastSeenSortId:
-                  type: integer
-                  description: >-
-                    It is the sort_id of the style last recieved from this
-                    endpoint. If the request is performed for the first time,
-                    leave it empty
-                  examples:
-                    - 2
-                pageSize:
-                  type: integer
-                  description: >-
-                    Number of items to be returned by the endpoint, the maximum
-                    amount per request is 50.
-                  examples:
-                    - 20
-      responses:
-        '200':
-          description: The request is processed successfully
-        '401':
-          description: Unauthorised. More description is found in the response body
-        '404':
-          description: Not found. More description is found in the response body
-        '500':
-          description: An error occurred while removing the style. Try again
-  '/tailor/style/{style_id}':
-    get:
-      summary: Get a cloth style by its ID
-      parameters:
-        - in: path
-          name: style_id
-          schema:
-            type: string
-          required: true
-      responses:
-        '200':
-          description: The request is processed successfully
-        '404':
-          description: Not found. More description is found in the response body
-        '500':
-          description: An error occurred while removing the style. Try again
-  /tailor/style-types:
-    get:
-      summary: Get a list of style types with ID and name
-      responses:
-        '200':
-          description: The request is processed successfully
-        '500':
-          description: An error occured while retrieving the style types. Try again
-  /tailor/fit-types:
-    get:
-      summary: Get a list of fit types with ID and name
-      responses:
-        '200':
-          description: The request is processed successfully
-        '500':
-          description: An error occured while retrieving the fit types. Try again
-  /data/search-data:
-    get:
-      summary: Get search data for search query processing
-      responses:
-        '200':
-          description: Successfully generated and sent the search data
-        '500':
-          description: An error occured while generating the search data. Try again
+{
+  "openapi": "3.1.0",
+  "info":
+    {
+      "title": "Backend API",
+      "version": "0.1.0",
+      "description": "API for the backend service"
+    },
+  "paths":
+    {
+      "/":
+        {
+          "get":
+            {
+              "summary": "Index",
+              "responses": { "418": { "description": "I'm a teapot" } }
+            }
+        },
+      "/accounts/register":
+        {
+          "post":
+            {
+              "summary": "Register a new user",
+              "requestBody":
+                {
+                  "required": true,
+                  "content":
+                    {
+                      "application/json":
+                        {
+                          "schema":
+                            { "$ref": "#/components/schemas/RegisterData" }
+                        }
+                    }
+                },
+              "responses":
+                {
+                  "201": { "description": "User registered successfully" },
+                  "400": { "description": "Validation error" }
+                }
+            }
+        },
+      "/accounts/login":
+        {
+          "post":
+            {
+              "summary": "User login",
+              "requestBody":
+                {
+                  "required": true,
+                  "content":
+                    {
+                      "application/json":
+                        {
+                          "schema": { "$ref": "#/components/schemas/LoginData" }
+                        }
+                    }
+                },
+              "responses":
+                {
+                  "200": { "description": "Login successful" },
+                  "401": { "description": "Invalid credentials" }
+                }
+            }
+        },
+      "/accounts/logout":
+        {
+          "post":
+            {
+              "summary": "User logout",
+              "responses": { "200": { "description": "Logout successful" } }
+            }
+        },
+      "/merchant/add":
+        {
+          "post":
+            {
+              "summary": "Add a new cloth material",
+              "requestBody":
+                {
+                  "required": true,
+                  "content":
+                    {
+                      "multipart/form-data":
+                        {
+                          "schema":
+                            {
+                              "$ref": "#/components/schemas/ClothMaterialUploadForm"
+                            }
+                        }
+                    }
+                },
+              "responses":
+                {
+                  "201": { "description": "Material added successfully" },
+                  "400": { "description": "Invalid input" }
+                }
+            }
+        },
+      "/merchant/materials":
+        {
+          "get":
+            {
+              "summary": "Get materials",
+              "parameters":
+                [
+                  {
+                    "in": "query",
+                    "name": "page",
+                    "schema": { "type": "integer" }
+                  },
+                  {
+                    "in": "query",
+                    "name": "per_page",
+                    "schema": { "type": "integer" }
+                  }
+                ],
+              "responses":
+                {
+                  "200":
+                    {
+                      "description": "List of materials",
+                      "content":
+                        {
+                          "application/json":
+                            {
+                              "schema":
+                                {
+                                  "$ref": "#/components/schemas/PaginatedMaterialResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+      "/merchant/remove/{id}":
+        {
+          "delete":
+            {
+              "summary": "Remove a material",
+              "parameters":
+                [
+                  {
+                    "in": "path",
+                    "name": "id",
+                    "required": true,
+                    "schema": { "type": "string", "format": "uuid" }
+                  }
+                ],
+              "responses":
+                {
+                  "200": { "description": "Material removed successfully" },
+                  "404": { "description": "Material not found" }
+                }
+            }
+        },
+      "/merchant/material-types":
+        {
+          "get":
+            {
+              "summary": "Get material types",
+              "responses":
+                {
+                  "200":
+                    {
+                      "description": "List of material types",
+                      "content":
+                        {
+                          "application/json":
+                            {
+                              "schema":
+                                {
+                                  "type": "array",
+                                  "items":
+                                    {
+                                      "$ref": "#/components/schemas/MaterialType"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+      "/merchant/edit":
+        {
+          "post":
+            {
+              "summary": "Edit a material",
+              "requestBody":
+                {
+                  "required": true,
+                  "content":
+                    {
+                      "application/json":
+                        {
+                          "schema":
+                            {
+                              "$ref": "#/components/schemas/EditMaterialRequest"
+                            }
+                        }
+                    }
+                },
+              "responses":
+                {
+                  "200": { "description": "Material updated successfully" },
+                  "400": { "description": "Invalid input" }
+                }
+            }
+        },
+      "/tailor/add":
+        {
+          "post":
+            {
+              "summary": "Add a new cloth style",
+              "requestBody":
+                {
+                  "required": true,
+                  "content":
+                    {
+                      "multipart/form-data":
+                        {
+                          "schema":
+                            {
+                              "$ref": "#/components/schemas/ClothStyleUploadForm"
+                            }
+                        }
+                    }
+                },
+              "responses":
+                {
+                  "201": { "description": "Style added successfully" },
+                  "400": { "description": "Invalid input" }
+                }
+            }
+        },
+      "/tailor/styles":
+        {
+          "get":
+            {
+              "summary": "Get styles",
+              "parameters":
+                [
+                  {
+                    "in": "query",
+                    "name": "page",
+                    "schema": { "type": "integer" }
+                  },
+                  {
+                    "in": "query",
+                    "name": "per_page",
+                    "schema": { "type": "integer" }
+                  }
+                ],
+              "responses":
+                {
+                  "200":
+                    {
+                      "description": "List of styles",
+                      "content":
+                        {
+                          "application/json":
+                            {
+                              "schema":
+                                {
+                                  "$ref": "#/components/schemas/PaginatedStyleResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+      "/tailor/remove/{id}":
+        {
+          "delete":
+            {
+              "summary": "Remove a style",
+              "parameters":
+                [
+                  {
+                    "in": "path",
+                    "name": "id",
+                    "required": true,
+                    "schema": { "type": "string", "format": "uuid" }
+                  }
+                ],
+              "responses":
+                {
+                  "200": { "description": "Style removed successfully" },
+                  "404": { "description": "Style not found" }
+                }
+            }
+        },
+      "/tailor/fit-types":
+        {
+          "get":
+            {
+              "summary": "Get fit types",
+              "responses":
+                {
+                  "200":
+                    {
+                      "description": "List of fit types",
+                      "content":
+                        {
+                          "application/json":
+                            {
+                              "schema":
+                                {
+                                  "type": "array",
+                                  "items":
+                                    { "$ref": "#/components/schemas/FitType" }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+      "/tailor/base-style-types":
+        {
+          "get":
+            {
+              "summary": "Get base style types",
+              "responses":
+                {
+                  "200":
+                    {
+                      "description": "List of base style types",
+                      "content":
+                        {
+                          "application/json":
+                            {
+                              "schema":
+                                {
+                                  "type": "array",
+                                  "items":
+                                    {
+                                      "$ref": "#/components/schemas/BaseStyleType"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+      "/tailor/style-types/{base-style-type}":
+        {
+          "get":
+            {
+              "summary": "Get style types",
+              "responses":
+                {
+                  "200":
+                    {
+                      "description": "List of style types",
+                      "content":
+                        {
+                          "application/json":
+                            {
+                              "schema":
+                                {
+                                  "type": "array",
+                                  "items":
+                                    { "$ref": "#/components/schemas/StyleType" }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+      "/tailor/edit":
+        {
+          "post":
+            {
+              "summary": "Edit a style",
+              "requestBody":
+                {
+                  "required": true,
+                  "content":
+                    {
+                      "application/json":
+                        {
+                          "schema":
+                            { "$ref": "#/components/schemas/EditStyleRequest" }
+                        }
+                    }
+                },
+              "responses":
+                {
+                  "200": { "description": "Style updated successfully" },
+                  "400": { "description": "Invalid input" }
+                }
+            }
+        },
+      "/customer/order":
+        {
+          "post":
+            {
+              "summary": "Place an order",
+              "requestBody":
+                {
+                  "required": true,
+                  "content":
+                    {
+                      "application/json":
+                        {
+                          "schema": { "$ref": "#/components/schemas/OrderData" }
+                        }
+                    }
+                },
+              "responses":
+                {
+                  "201":
+                    {
+                      "description": "Order placed successfully",
+                      "content":
+                        {
+                          "application/json":
+                            {
+                              "schema":
+                                { "$ref": "#/components/schemas/OrderResponse" }
+                            }
+                        }
+                    },
+                  "400": { "description": "Invalid input" }
+                }
+            }
+        },
+
+      "/customer/styles":
+        {
+          "get":
+            {
+              "summary": "Get styles to display to customers",
+              "parameters":
+                [
+                  {
+                    "in": "query",
+                    "name": "page",
+                    "schema": { "type": "integer" }
+                  },
+                  {
+                    "in": "query",
+                    "name": "per_page",
+                    "schema": { "type": "integer" }
+                  }
+                ],
+              "responses":
+                {
+                  "200":
+                    {
+                      "description": "List of customer styles",
+                      "content":
+                        {
+                          "application/json":
+                            {
+                              "schema":
+                                {
+                                  "$ref": "#/components/schemas/PaginatedCustomerStyleResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+      "/customer/materials":
+        {
+          "get":
+            {
+              "summary": "Get materials to display to customers",
+              "parameters":
+                [
+                  {
+                    "in": "query",
+                    "name": "page",
+                    "schema": { "type": "integer" }
+                  },
+                  {
+                    "in": "query",
+                    "name": "per_page",
+                    "schema": { "type": "integer" }
+                  }
+                ],
+              "responses":
+                {
+                  "200":
+                    {
+                      "description": "List of customer materials",
+                      "content":
+                        {
+                          "application/json":
+                            {
+                              "schema":
+                                {
+                                  "$ref": "#/components/schemas/PaginatedCustomerMaterialResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+      "/notifications/get":
+        {
+          "get":
+            {
+              "summary": "Get user notifications",
+              "parameters":
+                [
+                  {
+                    "in": "query",
+                    "name": "page",
+                    "schema": { "type": "integer", "minimum": 1, "default": 1 }
+                  },
+                  {
+                    "in": "query",
+                    "name": "per_page",
+                    "schema":
+                      {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 50,
+                        "default": 25
+                      }
+                  }
+                ],
+              "responses":
+                {
+                  "200":
+                    {
+                      "description": "List of user notifications",
+                      "content":
+                        {
+                          "application/json":
+                            {
+                              "schema":
+                                {
+                                  "$ref": "#/components/schemas/PaginatedNotificationResponse"
+                                }
+                            }
+                        }
+                    },
+                  "401": { "description": "Unauthorized" }
+                }
+            }
+        },
+      "/notifications/mark_read":
+        {
+          "post":
+            {
+              "summary": "Mark a notification as read",
+              "requestBody":
+                {
+                  "content":
+                    {
+                      "application/json":
+                        {
+                          "schema":
+                            { $ref: "#/components/schemas/MarkReadRequest" }
+                        }
+                    },
+                  "responses":
+                    {
+                      "200":
+                        {
+                          "description": "Notification marked as read successfully"
+                        },
+                      "400": { "description": "Bad request" },
+                      "401": { "description": "Unauthorized" },
+                      "404": { "description": "Notification not found" },
+                      "500": { "description": "Internal server error" }
+                    }
+                }
+            }
+        }
+    },
+  "components":
+    {
+      "schemas":
+        {
+          "RegisterData":
+            {
+              "type": "object",
+              "properties":
+                {
+                  "usertype": { "type": "integer" },
+                  "email": { "type": "string", "format": "email" },
+                  "name": { "type": "string" },
+                  "password": { "type": "string" }
+                },
+              "required": ["usertype", "email", "name", "password"]
+            },
+          "LoginData":
+            {
+              "type": "object",
+              "properties":
+                {
+                  "email": { "type": "string", "format": "email" },
+                  "password": { "type": "string" }
+                },
+              "required": ["email", "password"]
+            },
+          "ClothMaterialUploadForm":
+            {
+              "type": "object",
+              "properties":
+                {
+                  "image_file": { "type": "string", "format": "binary" },
+                  "data": { "$ref": "#/components/schemas/AddClothMaterial" }
+                }
+            },
+          "AddClothMaterial":
+            {
+              "type": "object",
+              "properties":
+                {
+                  "material_name": { "type": "string" },
+                  "material_type": { "type": "string", "format": "uuid" },
+                  "cost_per_unit": { "type": "integer" },
+                  "stock_quantity": { "type": "integer" }
+                }
+            },
+          "PaginatedMaterialResponse":
+            {
+              "type": "object",
+              "properties":
+                {
+                  "items":
+                    {
+                      "type": "array",
+                      "items":
+                        { "$ref": "#/components/schemas/MaterialResponse" }
+                    },
+                  "total": { "type": "integer" },
+                  "page": { "type": "integer" },
+                  "per_page": { "type": "integer" }
+                }
+            },
+          "MaterialResponse":
+            {
+              "type": "object",
+              "properties":
+                {
+                  "id": { "type": "string", "format": "uuid" },
+                  "sort_id": { "type": "integer" },
+                  "name": { "type": "string" },
+                  "filename": { "type": "string" },
+                  "costperunit": { "type": "integer" },
+                  "stockquantity": { "type": "integer" }
+                }
+            },
+          "ClothStyleUploadForm":
+            {
+              "type": "object",
+              "properties":
+                {
+                  "image_file": { "type": "string", "format": "binary" },
+                  "data": { "$ref": "#/components/schemas/AddClothStyle" }
+                }
+            },
+          "AddClothStyle":
+            {
+              "type": "object",
+              "properties":
+                {
+                  "style_name": { "type": "string" },
+                  "description": { "type": "string" },
+                  "style_type": { "type": "string", "format": "uuid" },
+                  "material_type_required":
+                    { "type": "string", "format": "uuid" },
+                  "fit_type": { "type": "string", "format": "uuid" },
+                  "cost_per_unit": { "type": "integer" }
+                }
+            },
+          "PaginatedStyleResponse":
+            {
+              "type": "object",
+              "properties":
+                {
+                  "items":
+                    {
+                      "type": "array",
+                      "items": { "$ref": "#/components/schemas/StyleResponse" }
+                    },
+                  "total": { "type": "integer" },
+                  "page": { "type": "integer" },
+                  "per_page": { "type": "integer" }
+                }
+            },
+          "StyleResponse":
+            {
+              "type": "object",
+              "properties":
+                {
+                  "costperunit": { "type": "integer" },
+                  "id": { "type": "string", "format": "uuid" },
+                  "sort_id": { "type": "integer" },
+                  "filename": { "type": "string" },
+                  "material_type_id": { "type": "string", "format": "uuid" },
+                  "fit_id": { "type": "string", "format": "uuid" },
+                  "name": { "type": "string" },
+                  "description": { "type": "string" }
+                }
+            },
+          "OrderData":
+            {
+              "type": "object",
+              "properties":
+                {
+                  "cloth_style_id": { "type": "string", "format": "uuid" },
+                  "material_id": { "type": "string", "format": "uuid" },
+                  "size": { "type": "string" },
+                  "special_instructions": { "type": "string" },
+                  "payment_amount": { "type": "number" }
+                }
+            },
+          "OrderResponse":
+            {
+              "type": "object",
+              "properties":
+                {
+                  "order_id": { "type": "string", "format": "uuid" },
+                  "customer_id": { "type": "string", "format": "uuid" },
+                  "cloth_style_id": { "type": "string", "format": "uuid" },
+                  "material_id": { "type": "string", "format": "uuid" },
+                  "size": { "type": "string" },
+                  "special_instructions": { "type": "string" },
+                  "created_at": { "type": "string", "format": "date-time" }
+                }
+            },
+          "MaterialType":
+            {
+              "type": "object",
+              "properties":
+                {
+                  "type_id": { "type": "string", "format": "uuid" },
+                  "name": { "type": "string" }
+                }
+            },
+          "EditMaterialRequest":
+            {
+              "type": "object",
+              "properties":
+                {
+                  "id": { "type": "string", "format": "uuid" },
+                  "name": { "type": "string" },
+                  "cost_per_unit": { "type": "integer" },
+                  "stock_quantity": { "type": "integer" },
+                  "material_type_id": { "type": "string", "format": "uuid" }
+                }
+            },
+          "FitType":
+            {
+              "type": "object",
+              "properties":
+                {
+                  "fit_id": { "type": "string", "format": "uuid" },
+                  "name": { "type": "string" }
+                }
+            },
+          "StyleType":
+            {
+              "type": "object",
+              "properties":
+                {
+                  "style_id": { "type": "string", "format": "uuid" },
+                  "base_style_type": { "type": "string", "format": "uuid" },
+                  "name": { "type": "string" }
+                }
+            },
+          "BaseStyleType":
+            {
+              "type": "object",
+              "properties":
+                {
+                  "base_id": { "type": "string", "format": "uuid" },
+                  "name": { "type": "string" }
+                }
+            },
+          "EditStyleRequest":
+            {
+              "type": "object",
+              "properties":
+                {
+                  "id": { "type": "string", "format": "uuid" },
+                  "name": { "type": "string" },
+                  "description": { "type": "string" },
+                  "cost_per_unit": { "type": "integer" },
+                  "style_type_id": { "type": "string", "format": "uuid" },
+                  "fit_type_id": { "type": "string", "format": "uuid" }
+                }
+            },
+          "PaginatedCustomerStyleResponse":
+            {
+              "type": "object",
+              "properties":
+                {
+                  "items":
+                    {
+                      "type": "array",
+                      "items":
+                        { "$ref": "#/components/schemas/CustomerStyleResponse" }
+                    },
+                  "total": { "type": "integer" },
+                  "page": { "type": "integer" },
+                  "per_page": { "type": "integer" }
+                }
+            },
+          "CustomerStyleResponse":
+            {
+              "type": "object",
+              "properties":
+                {
+                  "id": { "type": "string", "format": "uuid" },
+                  "name": { "type": "string" },
+                  "description": { "type": "string" },
+                  "filename": { "type": "string" },
+                  "cost_per_unit": { "type": "integer" }
+                }
+            },
+          "PaginatedCustomerMaterialResponse":
+            {
+              "type": "object",
+              "properties":
+                {
+                  "items":
+                    {
+                      "type": "array",
+                      "items":
+                        {
+                          "$ref": "#/components/schemas/CustomerMaterialResponse"
+                        }
+                    },
+                  "total": { "type": "integer" },
+                  "page": { "type": "integer" },
+                  "per_page": { "type": "integer" }
+                }
+            },
+          "PaginatedNotificationResponse":
+            {
+              "type": "object",
+              "properties":
+                {
+                  "items":
+                    {
+                      "type": "array",
+                      "items":
+                        { "$ref": "#/components/schemas/NotificationResponse" }
+                    },
+                  "total": { "type": "integer" },
+                  "page": { "type": "integer" },
+                  "per_page": { "type": "integer" }
+                }
+            },
+          "NotificationResponse":
+            {
+              "type": "object",
+              "properties":
+                {
+                  "id": { "type": "integer" },
+                  "order_id": { "type": "string", "format": "uuid" },
+                  "message": { "type": "string" }
+                }
+            },
+          "CustomerMaterialResponse":
+            {
+              "type": "object",
+              "properties":
+                {
+                  "id": { "type": "string", "format": "uuid" },
+                  "name": { "type": "string" },
+                  "filename": { "type": "string" },
+                  "cost_per_unit": { "type": "integer" }
+                }
+            }
+        }
+    }
+}
